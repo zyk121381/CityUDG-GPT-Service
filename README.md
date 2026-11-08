@@ -9,7 +9,8 @@
 
 **Turns the CityUHK (Dongguan) GPT service into an OpenAI-compatible API, plus a mirror of the original site.**
 
-![WakaTime](https://wakatime.com/badge/user/a2c9dcda-13d4-4457-81cb-c15737459130/project/c78a1d4a-64a3-494a-b1d0-1d69928c5131.svg) ![License](https://img.shields.io/badge/license-Apache%202.0-green) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) [![](https://img.shields.io/badge/Sponsor-f43f5e?logo=buymeacoffee&logoColor=white)](https://xa.2xrr.com/cashier/0e4c816c785bac0055)
+![WakaTime](https://wakatime.com/badge/user/a2c9dcda-13d4-4457-81cb-c15737459130/project/c78a1d4a-64a3-494a-b1d0-1d69928c5131.svg) ![License](https://img.shields.io/badge/license-Apache%202.0-green) ![Release](https://img.shields.io/github/v/release/zyk121381/CityUDG-GPT-Service?style=flat)
+ ![Python](https://img.shields.io/badge/python-3.10%2B-blue) [![](https://img.shields.io/badge/Sponsor-f43f5e?logo=buymeacoffee&logoColor=white)](https://xa.2xrr.com/cashier/0e4c816c785bac0055)
 
 </div>
 

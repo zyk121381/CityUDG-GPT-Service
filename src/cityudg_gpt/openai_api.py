@@ -95,6 +95,7 @@ class ModelRegistry:
 
 
 @router.get("/v1/models")
+@router.get("/v1", include_in_schema=False)
 async def list_models(request: Request) -> JSONResponse:
     registry: ModelRegistry = request.app.state.registry
     cfg: Settings = request.app.state.settings
