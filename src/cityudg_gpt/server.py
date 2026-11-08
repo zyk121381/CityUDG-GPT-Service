@@ -17,8 +17,14 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from . import errors as err
 from .auth import AuthError, AuthManager
 from .config import Settings, load
-from .openai_api import ConversationStore, ModelRegistry, ResponseStore, router as openai_router
-from .responses_api import router as responses_router
+from .openai_api import (
+    ConversationStore,
+    ModelRegistry,
+    ResponseStore,
+    chat_completions,
+    router as openai_router,
+)
+from .responses_api import create_response, router as responses_router
 from .upstream import DifyClient
 from .webproxy import router as proxy_router
 
@@ -255,7 +261,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(
         title="LLM Gateway" if not cfg.expose_docs else "CityUDG GPT Service",
         description=None if not cfg.expose_docs else "CityUDG GPT Service Gateway",
-        version="0.1.0",
+        version="0.1.1",
         lifespan=lifespan,
         docs_url="/__docs" if cfg.expose_docs else None,
         redoc_url=None,
@@ -396,6 +402,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # ---------- 路由 ----------
     app.include_router(openai_router)
     app.include_router(responses_router)
+
+    @app.post("/v1", include_in_schema=False)
+    async def v1_dispatch(request: Request) -> Any:
+        # 客户端只请求/v1时，按请求体形状分派：有 messages 走 Chat，有 input 走 Responses。
+        try:
+            body = await request.json()
+        except Exception:
+            body = None
+        if isinstance(body, dict) and "messages" not in body and "input" in body:
+            return await create_response(request)
+        return await chat_completions(request)
+
     if cfg.proxy_enabled:
         app.include_router(proxy_router)
 
