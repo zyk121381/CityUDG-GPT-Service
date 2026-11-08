@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+config.yaml
+config.yaml.bak
+data/
+logs/
+*.egg-info/
+.pytest_cache/
+.DS_Store
+
+# 本地运行日志
+logs-server*
+*.log
+
+# 开发期自查脚本，不入库
+scripts/
+
+*.tmp
+*.bak

@@ -1,0 +1,69 @@
+server:
+  host: "127.0.0.1"
+  port: 8787
+  expose_docs: false      # 是否暴露 /__docs、/__openapi.json；对外部署时保持 false
+  debug_headers: false    # 是否回 X-CGPT-* 诊断头（会暴露上游会话 id）
+
+upstream:
+  base: "https://gpt.cityu-dg.edu.cn"
+  timeout: 600          # 单次对话最长等待秒数
+
+auth:
+  # auto      = 有密码就自动登录，失败退回 token 文件 / 静态 token
+  # password  = 只走学号密码
+  # token     = 只用配置或 data/token.json 里的固定 token
+  mode: "auto"
+  token_file: "data/token.json"
+  token: "${GPT_TOKEN}"
+  account: "${CITYU_ACCOUNT}"
+  password: "${CITYU_PASSWORD}"
+  # 纯 token 模式下必须提供（密码登录会自动写入）
+  user_id: "${GPT_USER_ID}"
+  account_id: "${GPT_ACCOUNT_ID}"
+  # 后台探测 token 间隔（秒），失效会自动重登；0 = 关闭
+  keepalive_interval: 600
+
+  idp:
+    origin: "https://idp.cityu-dg.edu.cn"
+    login_data: "/api/public/bff/v1.2/frontend/login_data"
+    init_code: "/api/public/bff/v1.2/one_time_login/init_code"
+    token: "/api/public/bff/v1.2/rest_token"
+
+  sso:
+    info: "/api/getSsoInfo"
+    login: "/api/loginSSO"
+
+openai:
+  default_model: "gpt-4o"
+  owned_by: "system"          # /v1/models 里的 owned_by
+  search_enabled: false       # 联网搜索
+  library_enabled: false      # 专业文献
+  thinking_enabled: false     # 深度思考
+
+proxy:
+  enabled: true
+  password: "${PROXY_PASSWORD}"
+  api_key: "${OPENAI_API_KEY}"
+
+browser:
+  # 让出站请求和学校网页里发出来的一样（UA / Referer / Origin / sec-fetch-* 等）
+  impersonate: true
+  http2: true              # 浏览器走 h2；需要装 h2 包
+  referer_path: "/conversation-mode"
+  # 下面几项留空就用内置的 Chromium 156 指纹；换 UA 时记得同步 sec_ch_ua
+  user_agent: ""
+  sec_ch_ua: ""
+  accept_language: ""
+
+conversations:
+  persist: true
+  store_file: "data/conversations.json"
+  # 按消息内容自动串联上游会话。两个租户发同样的开场白就会撞进同一条会话，
+  # 所以默认关掉；多用户场景请让调用方传 X-Conversation-Id 或 conversation_id。
+  auto_chain: false
+  # 自动删除由本服务发起的会话；用户在学校网页里自己开的会话不受影响
+  auto_delete:
+    enabled: false
+    idle_seconds: 3600      # 闲置多久后删除；0 = 不按闲置删
+    max_age_seconds: 0      # 创建后多久强制删除；0 = 不限
+    sweep_seconds: 300      # 多久扫一次
